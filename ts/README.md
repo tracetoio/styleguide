@@ -17,11 +17,80 @@ Next you can see our code styleguide based on tslint config + codelyzer.
 ## Types
   <a name="type--mandatory"></a><a name="1.1"></a>
   - [1.1](#type--mandatory) Types must be explicitly written for all variables, arrays and methods:
-  Пример с методом, переменной и массивом.
+    ```ts
+    // bad
+    const foo = 5;
 
+    bar(a) {
+      const includeArray = [1, 2, 3];
+      const aIncluded = includeArray.some((element) => element === a);
+      const resultObject = {
+        array: includeArray,
+        digit: a
+      };
+
+      return resultObject;
+    }
+
+    // good
+    interface IBarResult {
+      array: Array<number>;
+      included: boolean;
+    }
+
+    const foo: number = 5;
+
+    bar(a: number): IBarResult {
+      const includeArray: Array<number> = [1, 2, 3];
+      const aIncluded: boolean = includeArray.some((element: number) => element === a);
+      const resultObject: IBarResult = <IBarResult>{
+        array: includeArray,
+        included: aIncluded
+      };
+
+      return resultObject;
+    }
+    ```
   <a name="type--fullness"></a><a name="1.2"></a>
   - [1.2](#type--fullness) If you do not know or not sure about type of any entity in your code, assign type `any`:
-  Пример
+    ```ts
+    // bad
+    this.anyLibrary
+      .getSomething()
+      .subscribe(
+        () => {},
+        (error) => {}
+      );
+
+      const includeArray = [1, 2, 3];
+      const aIncluded = includeArray.some((element) => element === a);
+      const resultObject = {
+        array: includeArray,
+        digit: a
+      };
+
+      return resultObject;
+    }
+
+    // good
+    interface IBarResult {
+      array: Array<number>;
+      included: boolean;
+    }
+
+    const foo: number = 5;
+
+    bar(a: number): IBarResult {
+      const includeArray: Array<number> = [1, 2, 3];
+      const aIncluded: boolean = includeArray.some((element: number) => element === a);
+      const resultObject: IBarResult = <IBarResult>{
+        array: includeArray,
+        included: aIncluded
+      };
+
+      return resultObject;
+    }
+    ```
 
 ## Interfaces
   <a name="interfaces--usecases"></a><a name="2.1"></a>
@@ -50,45 +119,204 @@ Next you can see our code styleguide based on tslint config + codelyzer.
 
   <a name="classes--constructor"></a><a name="3.2"></a>
   - [3.2](#classes--constructor) Constructor requirments:
-    - All params should be in column under first param. First params starts after first opening brackets.
-    Пример
+    - All params should be in column under first param and sorted by accessor. First params starts after first opening brackets:
+      ```ts
+      // bad
+      constructor(
+        private authService: AuthService,
+        protected translateService: TranslateService,
+        protected title: Title,
+        protected router: Router,
+        protected elementRef: ElementRef,
+        protected scrollService: ScrollService,
+        protected toastr: ToastrService
+      ) { }
+
+      // good
+      constructor(private authService: AuthService,
+                  protected translateService: TranslateService,
+                  protected title: Title,
+                  protected router: Router,
+                  protected elementRef: ElementRef,
+                  protected scrollService: ScrollService,
+                  protected toastr: ToastrService) { }
+      ```
     - Classes have a default constructor if one is not specified.
-    Пример
-    - Avoid big calculations in contructor.
-    Пример
-    - Move all assignments from properties' declarations to the contructor.
-    Пример
+      ```ts
+      // bad
+      class someClass {
+        foo(): void {
+          // any
+        }
+      }
+
+      // good
+      class someClass {
+
+        constructor() { }
+
+        foo(): void {
+          // any
+        }
+      }
+      ```
+    - Avoid big calculations in contructor. Create functions in class and call them from contructor.
 
 ## Async Data Processing
   <a name="async-data--naming"></a><a name="4.1"></a>
   - [4.1](#async-data--naming) Observables should have `$` sign in the end of name as identifier:
-  Пример (один обсервбл и массив)
+    ```ts
+    // bad
+    class someClass {
+      profileChangedObservable: Observable<Profile>;
+      ...
+
+      foo(): void {
+        ...
+        const arrayOfServiceMethodsObservables = service.methods;
+        ...
+      }
+    }
+
+    // good
+    class someClass {
+      profileChanged$: Observable<Profile>;
+      ...
+
+      foo(): void {
+        ...
+        const arrayOfServiceMethods$ = service.methods;
+        ...
+      }
+    }
+    ```
 
   <a name="async-data--no-global-observable"></a><a name="4.2"></a>
-  - [4.2](#async-data--no-global-observable) Avoid using global observable, use `concat` or another pipe's methods instead:
-  Пример
+  - [4.2](#async-data--no-global-observable) Avoid using global observable, use High Order Observables instead:
+    ```ts
+    // bad
+    class someClass {
+      ...
+      foo(): Observably<any> {
+        return Observable.create((observer: Observer<any>) => {
+          this.observableMethod()
+            .subscribe(
+              (respone: any) => {
+                this.secondObservableMethod(response)
+                  .subscribe(
+                    () => {
+                      observer.complete();
+                    }
+                  );
+              }
+            );
+        });
+      }
+      ...
+    }
 
+    // good
+    class someClass {
+      ...
+      foo(): Observably<any> {
+        return this.observableMethod()
+          .pipe(
+            concatMap((respone: any) => this.secondObservableMethod(response))
+          );
+      };
+      ...
+    }
+    ```
   <a name="async-data--wrapping-promises"></a><a name="4.3"></a>
   - [4.3](#async-data--wrapping-promises) Avoid using promises and wrap them into observables and rxjs:
-  Пример
+    ```ts
+    // bad
+    class someClass {
+      ...
+      foo(): any {
+        return this.contractsService
+        .getContract(ContractsList.ProfileToken)
+        .methods
+        .getUserProfileTokenCount()
+        .call()
+        .then()
+        .catch()
+      };
+      ...
+    }
 
-  <a name="async-data--flatting-operators"></a><a name="4.4"></a>
-  - [4.4](#async-data--flatting-operators) Avoid using promises and wrap them into observables and rxjs:
-  Пример
+    // good
+    class someClass {
+      ...
+      foo(): Observably<any> {
+        return from(this.contractsService
+          .getContract(ContractsList.ProfileToken)
+          .methods
+          .getUserProfileTokenCount()
+          .call()
+        )
+          .pipe(
+            catchError((error: any) => throwError(error))
+          )
+      }
+      ...
+    }
+    ```
 
 ## Functions
   <a name="functions--only-arrow-functions"></a><a name="5.1"></a>
   - [5.1](#functions--only-arrow-functions) Use only arrow functions, avoid old plain construction:
-  Пример
+    ```ts
+    // bad
+    class someClass {
+      ...
+      const filteredArray: Array<any> = someArray.filter(function(item: any) {return item === 1});
+      ...
+    }
+
+    // good
+    class someClass {
+      ...
+      const filteredArray: Array<any> = someArray.filter((item: any) => item === 1);
+      ...
+    }
+    ```
 
   <a name="functions--alignments"></a><a name="5.2"></a>
-  - [5.2](#functions--alignments) Align method's arguments and chains in one column with symmetry:
-  Пример
+  - [5.2](#functions--alignments) Align method's arguments (when they are over 140 letters) and chains into one column with symmetry:
+    ```ts
+    // bad
+    class someClass {
+      ...
+      this.service.method()
+      .pipe()
+      .subscribe();
+      ...
+    }
+
+    // good
+    class someClass {
+      ...
+      this.service
+        .method()
+        .pipe()
+        .subscribe();
+      ...
+    }
+    ```
 
 ## Imports
   <a name="imports--global-imports"></a><a name="6.1"></a>
   - [6.1](#imports--global-imports) Avoid global imports from library, specific modules imports are more preferable:
-  Пример
+    ```ts
+    // bad
+    import { MatInputModule } from '@angular/material';
+    import { Observable } from 'rxjs/Rx';
+
+    // good
+    import { MatInputModule } from '@angular/material/input';
+    import { Observable } from 'rxjs';
+    ```
 
   <a name="imports--order"></a><a name="6.2"></a>
   - [6.2](#imports--order) Strictly follow next imports order for angular projects with one empty line space between groups:
@@ -101,18 +329,38 @@ Next you can see our code styleguide based on tslint config + codelyzer.
     1. Custom components
     1. Custom models
     1. Another custom entities
-  Пример
 
   > Why? Easier to find import if they are groupped by role.
 
 ## Comments
   <a name="comments--methods-declaration"></a><a name="7.1"></a>
-  - [7.1](#comments--methods-declaration) Cover with comments methods in controllers:
-  Пример
+  - [7.1](#comments--methods-declaration) Cover with comments in special format methods in controllers:
+    ```ts
+    // bad
+    ...
+    private addNewKYCStatus(requestor: IRequestor, requestorPRAddress: string): Observable<KYCStatus> {
+      ...
+    }
+    ...
 
-  <a name="comments--html-declaration"></a><a name="7.2"></a>
-  - [7.2](#comments--html-declaration) Separate HTML parts of template with comments:
-  Пример
+    // Adds new KYC status to DB
+    ...
+    private addNewKYCStatus(requestor: IRequestor, requestorPRAddress: string): Observable<KYCStatus> {
+      ...
+    }
+    ...
+
+    // good
+    ...
+    /**
+     * Adds new KYC status to DB
+     * @method addNewKYCStatus
+     */
+    private addNewKYCStatus(requestor: IRequestor, requestorPRAddress: string): Observable<KYCStatus> {
+      ...
+    }
+    ...
+    ```
 
 ## Whitespaces
   <a name="whitespaces--recommendations"></a><a name="8.1"></a>
