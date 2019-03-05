@@ -307,7 +307,7 @@ Next you can see our code styleguide based on tslint config + codelyzer.
 
 ## Imports
   <a name="imports--global-imports"></a><a name="6.1"></a>
-  - [6.1](#imports--global-imports) Avoid global imports from library, specific modules imports are more preferable:
+  - [6.1](#imports--global-imports) Avoid importing the entire library, import only modules you need:
     ```ts
     // bad
     import { MatInputModule } from '@angular/material';
@@ -317,7 +317,7 @@ Next you can see our code styleguide based on tslint config + codelyzer.
     import { MatInputModule } from '@angular/material/input';
     import { Observable } from 'rxjs';
     ```
-
+  >Check your library's structure. Example above is little contradictory. Anyway as a result you should have only one module imported, not the entire library. 
   <a name="imports--order"></a><a name="6.2"></a>
   - [6.2](#imports--order) Strictly follow next imports order for angular projects with one empty line space between groups:
     1. Angular core modules imports (@angular)
