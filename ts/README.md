@@ -62,17 +62,6 @@ Next you can see our code styleguide based on tslint config + codelyzer.
         (error) => console.log(error)
       );
 
-    bar(a) {
-      const includeArray = [1, 2, 3];
-      const aIncluded = includeArray.some((element) => element === a);
-      const resultObject = {
-        array: includeArray,
-        digit: a
-      };
-
-      return resultObject;
-    }
-
     // good
     this.anyLibrary
       .getSomething()
@@ -80,22 +69,6 @@ Next you can see our code styleguide based on tslint config + codelyzer.
         () => {},
         (error: any) => console.log(error)
       );
-
-    interface IBarResult {
-      array: Array<number>;
-      included: boolean;
-    }
-
-    bar(a: number): IBarResult {
-      const includeArray: Array<number> = [1, 2, 3];
-      const aIncluded: boolean = includeArray.some((element: number) => element === a);
-      const resultObject: IBarResult = <IBarResult>{
-        array: includeArray,
-        included: aIncluded
-      };
-
-      return resultObject;
-    }
     ```
 
 ## Interfaces
