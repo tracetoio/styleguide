@@ -52,16 +52,17 @@ Next you can see our code styleguide based on tslint config + codelyzer.
     }
     ```
   <a name="type--fullness"></a><a name="1.2"></a>
-  - [1.2](#type--fullness) If you do not know or not sure about type of any entity in your code, assign type `any`:
+  - [1.2](#type--fullness) If you do not know or not sure about type of an entity in your code, assign type `any`:
     ```ts
     // bad
     this.anyLibrary
       .getSomething()
       .subscribe(
         () => {},
-        (error) => {}
+        (error) => console.log(error)
       );
 
+    bar(a) {
       const includeArray = [1, 2, 3];
       const aIncluded = includeArray.some((element) => element === a);
       const resultObject = {
@@ -73,12 +74,17 @@ Next you can see our code styleguide based on tslint config + codelyzer.
     }
 
     // good
+    this.anyLibrary
+      .getSomething()
+      .subscribe(
+        () => {},
+        (error: any) => console.log(error)
+      );
+
     interface IBarResult {
       array: Array<number>;
       included: boolean;
     }
-
-    const foo: number = 5;
 
     bar(a: number): IBarResult {
       const includeArray: Array<number> = [1, 2, 3];
@@ -118,7 +124,7 @@ Next you can see our code styleguide based on tslint config + codelyzer.
     1. Template methods (if frontend)
 
   <a name="classes--constructor"></a><a name="3.2"></a>
-  - [3.2](#classes--constructor) Constructor requirments:
+  - [3.2](#classes--constructor) Constructor requirements:
     - All params should be in column under first param and sorted by accessor. First params starts after first opening brackets:
       ```ts
       // bad
