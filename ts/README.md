@@ -1,4 +1,4 @@
-# Traceto.io TypeScript Styleguide
+# traceto.io TypeScript Styleguide
 For typescript code in our projects we use [codelyzer](https://github.com/mgechev/codelyzer) as a core lint rules, and `tslint.json` with our configs.
 Next you can see our code styleguide based on tslint config + codelyzer.
 
