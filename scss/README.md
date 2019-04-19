@@ -1,4 +1,4 @@
-# traceto.io TypeScript Styleguide
+# traceto.io SCSS Styleguide
 For styles in our projects we use [BEM](http://getbem.com/introduction/) conventions, with next basic rules:
 - BEM nesting is 1 lvl depth.
 - Nesting is 3.
